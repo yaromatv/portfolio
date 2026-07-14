@@ -30,5 +30,69 @@
         "url": "https://archikonkurs.pl/konkurs/398/"
       }
     ]
+  },
+  {
+    "id": "inowroclaw",
+    "title": "Culture & Education Center",
+    "location": "Inowrocław, Poland",
+    "year": 2026,
+    "month": 3,
+    "role": ["Architect", "Archviz"],
+    "tools": ["Rhino", "AI", "Microstation", "PS"],
+    "rating": 9,
+    "awards": [
+      {
+        "label": "Honorable mention in SARP Competition #398 'Energia Inowrocławia' in Inowrocław",
+        "url": "https://archikonkurs.pl/konkurs/398/"
+      }
+    ]
+  },
+  {
+    "id": "inowroclaw",
+    "title": "Culture & Education Center",
+    "location": "Inowrocław, Poland",
+    "year": 2026,
+    "month": 3,
+    "role": ["Architect", "Archviz"],
+    "tools": ["Rhino", "AI", "Microstation", "PS"],
+    "rating": 9,
+    "awards": [
+      {
+        "label": "Honorable mention in SARP Competition #398 'Energia Inowrocławia' in Inowrocław",
+        "url": "https://archikonkurs.pl/konkurs/398/"
+      }
+    ]
+  },
+  {
+    "id": "inowroclaw",
+    "title": "Culture & Education Center",
+    "location": "Inowrocław, Poland",
+    "year": 2026,
+    "month": 3,
+    "role": ["Architect", "Archviz"],
+    "tools": ["Rhino", "AI", "Microstation", "PS"],
+    "rating": 9,
+    "awards": [
+      {
+        "label": "Honorable mention in SARP Competition #398 'Energia Inowrocławia' in Inowrocław",
+        "url": "https://archikonkurs.pl/konkurs/398/"
+      }
+    ]
+  },
+  {
+    "id": "inowroclaw",
+    "title": "Culture & Education Center",
+    "location": "Inowrocław, Poland",
+    "year": 2026,
+    "month": 3,
+    "role": ["Architect", "Archviz"],
+    "tools": ["Rhino", "AI", "Microstation", "PS"],
+    "rating": 9,
+    "awards": [
+      {
+        "label": "Honorable mention in SARP Competition #398 'Energia Inowrocławia' in Inowrocław",
+        "url": "https://archikonkurs.pl/konkurs/398/"
+      }
+    ]
   }
 ]
