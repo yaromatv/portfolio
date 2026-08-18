@@ -1,10 +1,11 @@
 import { Project } from '@/types/project';
+import { ProjectImage } from '@/lib/utils';
 import ProjectInfo from './ProjectInfo';
 import Image from 'next/image';
 
 interface ProjectStripProps {
   project: Project;
-  images: string[];
+  images: ProjectImage[];
 }
 
 export default function ProjectStrip({ project, images }: ProjectStripProps) {
@@ -17,14 +18,17 @@ export default function ProjectStrip({ project, images }: ProjectStripProps) {
       </div>
 
       <div className="flex flex-1 gap-3 overflow-hidden">
-        {thumbnails.map((src, i) => (
-          <div key={i} className="relative h-40 w-56 shrink-0 overflow-hidden rounded-md">
+        {thumbnails.map((image, i) => (
+          <div
+            key={i}
+            className="relative flex h-40 shrink-0 items-center justify-center overflow-hidden bg-neutral-50"
+          >
             <Image
-              src={src}
+              src={image.src}
               alt={`${project.title} - zdjecie ${i + 1}`}
-              fill
-              sizes="224px"
-              className="object-cover"
+              width={image.width}
+              height={image.height}
+              className="h-40 w-auto object-contain"
             />
           </div>
         ))}

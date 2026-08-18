@@ -1,9 +1,10 @@
 import Image from 'next/image';
 import { Project } from '@/types/project';
+import { ProjectImage } from '@/lib/utils';
 
 interface ProjectGalleryProps {
   project: Project;
-  images: string[];
+  images: ProjectImage[];
 }
 
 export default function ProjectGallery({ project, images }: ProjectGalleryProps) {
@@ -16,18 +17,15 @@ export default function ProjectGallery({ project, images }: ProjectGalleryProps)
         </div>
       </div>
 
-      <div className="flex flex-1 gap-4 overflow-x-auto px-6 py-6">
-        {images.map((src, i) => (
-          <div
-            key={i}
-            className="relative h-full w-[80vw] flex-shrink-0 overflow-hidden rounded-md md:w-[60vw]"
-          >
+      <div className="flex flex-1 items-center gap-4 overflow-x-auto px-6 py-6">
+        {images.map((image, i) => (
+          <div key={i} className="relative flex h-full shrink-0 items-center justify-center">
             <Image
-              src={src}
+              src={image.src}
               alt={`${project.title} - zdjecie ${i + 1}`}
-              fill
-              sizes="80vw"
-              className="object-cover"
+              width={image.width}
+              height={image.height}
+              className="h-full w-auto object-contain"
             />
           </div>
         ))}

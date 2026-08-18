@@ -8,7 +8,7 @@ export default function PortfolioList() {
   const sorted = sortByRelevance(projects);
 
   return (
-    <div className="flex flex-col divide-y divide-neutral-200">
+    <div className="flex flex-col">
       {sorted.map((project) => (
         <ProjectStrip key={project.id} project={project} images={getProjectImages(project.id)} />
       ))}
