@@ -6,7 +6,7 @@
     "year": 2026,
     "month": 5,
     "role": ["Architect", "Archviz", "Project Manager"],
-    "tools": ["Sketchup", "AI", "Microstation", "PS"],
+    "tools": ["SU", "AI", "Microstation", "PS"],
     "rating": 9,
     "awards": [
       {
@@ -21,7 +21,7 @@
     "location": "Inowrocław, Poland",
     "year": 2026,
     "month": 3,
-    "role": ["Architect", "Archviz"],
+    "role": ["Interior Design", "Archviz"],
     "tools": ["Rhino", "AI", "Microstation", "PS"],
     "rating": 9,
     "awards": [
@@ -32,67 +32,102 @@
     ]
   },
   {
-    "id": "inowroclaw",
-    "title": "Culture & Education Center",
-    "location": "Inowrocław, Poland",
-    "year": 2026,
-    "month": 3,
-    "role": ["Architect", "Archviz"],
-    "tools": ["Rhino", "AI", "Microstation", "PS"],
+    "id": "leszno",
+    "title": "Museum",
+    "location": "Leszno, Poland",
+    "year": 2023,
+    "month": 2,
+    "role": ["3D", "Archviz"],
+    "tools": ["SU", "V-Ray", "PS"],
     "rating": 9,
-    "awards": [
-      {
-        "label": "Honorable mention in SARP Competition #398 'Energia Inowrocławia' in Inowrocław",
-        "url": "https://archikonkurs.pl/konkurs/398/"
-      }
-    ]
+    "awards": []
   },
   {
-    "id": "inowroclaw",
-    "title": "Culture & Education Center",
-    "location": "Inowrocław, Poland",
-    "year": 2026,
-    "month": 3,
-    "role": ["Architect", "Archviz"],
-    "tools": ["Rhino", "AI", "Microstation", "PS"],
-    "rating": 9,
-    "awards": [
-      {
-        "label": "Honorable mention in SARP Competition #398 'Energia Inowrocławia' in Inowrocław",
-        "url": "https://archikonkurs.pl/konkurs/398/"
-      }
-    ]
+    "id": "ibg-boya",
+    "title": "Office",
+    "location": "Rzeszów, Poland",
+    "year": 2024,
+    "month": 6,
+    "role": ["Architect", "3D", "Archviz"],
+    "tools": ["SU", "AI"],
+    "rating": 8,
+    "awards": []
   },
   {
-    "id": "inowroclaw",
-    "title": "Culture & Education Center",
-    "location": "Inowrocław, Poland",
-    "year": 2026,
-    "month": 3,
-    "role": ["Architect", "Archviz"],
-    "tools": ["Rhino", "AI", "Microstation", "PS"],
-    "rating": 9,
-    "awards": [
-      {
-        "label": "Honorable mention in SARP Competition #398 'Energia Inowrocławia' in Inowrocław",
-        "url": "https://archikonkurs.pl/konkurs/398/"
-      }
-    ]
+    "id": "cegielniana",
+    "title": "Residental",
+    "location": "Rzeszów, Poland",
+    "year": 2023,
+    "month": 2,
+    "role": ["3D", "Archviz"],
+    "tools": ["SU", "AI"],
+    "rating": 8,
+    "awards": []
   },
   {
-    "id": "inowroclaw",
-    "title": "Culture & Education Center",
-    "location": "Inowrocław, Poland",
+    "id": "bialystok",
+    "title": "Prosecutor's Office",
+    "location": "Białystok, Poland",
     "year": 2026,
-    "month": 3,
+    "month": 6,
+    "role": ["Architect", "3D", "Archviz"],
+    "tools": ["Rhino", "AI"],
+    "rating": 7,
+    "awards": []
+  },
+  {
+    "id": "lodowisko",
+    "title": "Theme park",
+    "location": "Kielce, Poland",
+    "year": 2023,
+    "month": 6,
+    "role": ["Architect", "3D"],
+    "tools": ["SU", "Microstation"],
+    "rating": 6,
+    "awards": []
+  },
+  {
+    "id": "nuda",
+    "title": "Residental",
+    "location": "Rzeszów, Poland",
+    "year": 2026,
+    "month": 7,
+    "role": ["Archviz"],
+    "tools": ["Rhino", "AI"],
+    "rating": 4,
+    "awards": []
+  },
+  {
+    "id": "stalowa",
+    "title": "Mixed-use high-rise",
+    "location": "Stalowa Wola, Poland",
+    "year": 2025,
+    "month": 4,
+    "role": ["Archviz"],
+    "tools": ["SU", "D5"],
+    "rating": 5,
+    "awards": []
+  },
+  {
+    "id": "potockiego",
+    "title": "Residental",
+    "location": "Rzeszów, Poland",
+    "year": 2025,
+    "month": 10,
     "role": ["Architect", "Archviz"],
-    "tools": ["Rhino", "AI", "Microstation", "PS"],
-    "rating": 9,
-    "awards": [
-      {
-        "label": "Honorable mention in SARP Competition #398 'Energia Inowrocławia' in Inowrocław",
-        "url": "https://archikonkurs.pl/konkurs/398/"
-      }
-    ]
+    "tools": ["Revit", "D5"],
+    "rating": 4,
+    "awards": []
+  },
+  {
+    "id": "tarnobrzeg",
+    "title": "Bank",
+    "location": "Tarnobrzeg, Poland",
+    "year": 2023,
+    "month": 11,
+    "role": ["Architect", "Archviz"],
+    "tools": ["Revit", "SU", "D5"],
+    "rating": 7,
+    "awards": []
   }
 ]
