@@ -12,23 +12,24 @@ export default function ProjectStrip({ project, images }: ProjectStripProps) {
   const thumbnails = images.slice(0, 4);
 
   return (
-    <div className="flex items-center gap-6 py-6">
-      <div className="w-56 shrink-0">
+    <div className="flex items-start gap-3 py-4 pl-[15vw]">
+      <div className="w-56 flex-shrink-0">
         <ProjectInfo project={project} />
       </div>
 
-      <div className="flex flex-1 gap-3 overflow-hidden">
+      <div className="flex gap-3">
         {thumbnails.map((image, i) => (
           <div
             key={i}
-            className="relative flex h-40 shrink-0 items-center justify-center overflow-hidden bg-neutral-50"
+            style={{ aspectRatio: `${image.width} / ${image.height}` }}
+            className="relative h-40 flex-shrink-0"
           >
             <Image
               src={image.src}
               alt={`${project.title} - zdjecie ${i + 1}`}
-              width={image.width}
-              height={image.height}
-              className="h-40 w-auto object-contain"
+              fill
+              sizes="25vw"
+              className="object-contain"
             />
           </div>
         ))}
