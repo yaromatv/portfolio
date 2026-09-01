@@ -87,7 +87,7 @@
     "awards": []
   },
   {
-    "id": "nuda",
+    "id": "akwar",
     "title": "Residental",
     "location": "Rzeszów, Poland",
     "year": 2026,
@@ -127,6 +127,28 @@
     "month": 11,
     "role": ["Architect", "Archviz"],
     "tools": ["Revit", "SU", "D5"],
+    "rating": 7,
+    "awards": []
+  },
+  {
+    "id": "potokowa",
+    "title": "Residental",
+    "location": "Rzeszów, Poland",
+    "year": 2025,
+    "month": 10,
+    "role": ["Interior Design"],
+    "tools": ["SU", "LO"],
+    "rating": 4,
+    "awards": []
+  },
+  {
+    "id": "bawialnia",
+    "title": "Play room",
+    "location": "Kielce, Poland",
+    "year": 2023,
+    "month": 7,
+    "role": ["Interior Design", "Archviz"],
+    "tools": ["SU", "LO", "D5"],
     "rating": 7,
     "awards": []
   }

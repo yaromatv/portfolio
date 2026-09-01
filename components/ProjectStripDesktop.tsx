@@ -1,14 +1,14 @@
 import { Project } from '@/types/project';
 import { ProjectImage } from '@/lib/utils';
 import ProjectInfo from './ProjectInfo';
-import Image from 'next/image';
+import ProjectImageThumbnail from './ProjectImage';
 
-interface ProjectStripProps {
+interface ProjectStripDesktopProps {
   project: Project;
   images: ProjectImage[];
 }
 
-export default function ProjectStrip({ project, images }: ProjectStripProps) {
+export default function ProjectStripDesktop({ project, images }: ProjectStripDesktopProps) {
   const thumbnails = images.slice(0, 4);
 
   return (
@@ -19,19 +19,15 @@ export default function ProjectStrip({ project, images }: ProjectStripProps) {
 
       <div className="flex gap-3">
         {thumbnails.map((image, i) => (
-          <div
+          <ProjectImageThumbnail
             key={i}
-            style={{ aspectRatio: `${image.width} / ${image.height}` }}
-            className="relative h-40 flex-shrink-0"
-          >
-            <Image
-              src={image.src}
-              alt={`${project.title} - zdjecie ${i + 1}`}
-              fill
-              sizes="25vw"
-              className="object-contain"
-            />
-          </div>
+            image={image}
+            alt={`${project.title} - zdjecie ${i + 1}`}
+            fill
+            sizes="25vw"
+            wrapperClassName="h-40 shrink-0"
+            className="object-contain"
+          />
         ))}
       </div>
     </div>

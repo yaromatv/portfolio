@@ -1,6 +1,6 @@
-import Image from 'next/image';
 import { Project } from '@/types/project';
 import { ProjectImage } from '@/lib/utils';
+import ProjectImageThumbnail from './ProjectImage';
 
 interface ProjectGalleryProps {
   project: Project;
@@ -20,11 +20,9 @@ export default function ProjectGallery({ project, images }: ProjectGalleryProps)
       <div className="flex flex-1 items-center gap-4 overflow-x-auto px-6 py-6">
         {images.map((image, i) => (
           <div key={i} className="relative flex h-full shrink-0 items-center justify-center">
-            <Image
-              src={image.src}
+            <ProjectImageThumbnail
+              image={image}
               alt={`${project.title} - zdjecie ${i + 1}`}
-              width={image.width}
-              height={image.height}
               className="h-full w-auto object-contain"
             />
           </div>
