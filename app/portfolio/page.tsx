@@ -1,8 +1,8 @@
-import PortfolioList from '@/components/PortfolioList';
+import PortfolioList from "@/components/PortfolioList";
 
 export default function PortfolioPage() {
   return (
-    <main className="mx-auto max-w-7xl px-6">
+    <main className="w-full">
       <PortfolioList />
     </main>
   );
