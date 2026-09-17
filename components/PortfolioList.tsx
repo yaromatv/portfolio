@@ -3,7 +3,11 @@ import { Project } from '@/types/project';
 import { sortByRelevance, getProjectImages, ProjectImage } from '@/lib/utils';
 import PortfolioListClient from './PortfolioListClient';
 
-export default function PortfolioList() {
+interface PortfolioListProps {
+  focusProjectId?: string;
+}
+
+export default function PortfolioList({ focusProjectId }: PortfolioListProps) {
   const projects = projectsData as unknown as Project[];
   const sorted = sortByRelevance(projects);
 
@@ -12,5 +16,11 @@ export default function PortfolioList() {
     return acc;
   }, {});
 
-  return <PortfolioListClient projects={sorted} imagesByProject={imagesByProject} />;
+  return (
+    <PortfolioListClient
+      projects={sorted}
+      imagesByProject={imagesByProject}
+      focusProjectId={focusProjectId}
+    />
+  );
 }
