@@ -1,8 +1,7 @@
 import { notFound } from 'next/navigation';
 import projectsData from '@/data/projects.json';
 import { Project } from '@/types/project';
-import { getProjectImages } from '@/lib/utils';
-import ProjectGallery from '@/components/ProjectGallery';
+import PortfolioList from '@/components/PortfolioList';
 
 interface ProjectPageProps {
   params: Promise<{ id: string }>;
@@ -17,7 +16,9 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
     notFound();
   }
 
-  const images = getProjectImages(project.id);
-
-  return <ProjectGallery project={project} images={images} />;
+  return (
+    <main className="w-full">
+      <PortfolioList focusProjectId={project.id} />
+    </main>
+  );
 }

@@ -6,7 +6,7 @@ Ten plik jest czytany przez Claude Code na starcie każdej sesji w tym repo. Zaw
 
 ## Projekt
 
-Portfolio architekta — **Yaroslav Matvieiev**. Status: **MVP**, obecnie budowana jest tylko podstrona `/portfolio` (lista projektów + widok rozwiniętego projektu). Strona "O mnie" jest odłożona na kolejną wersję po MVP.
+Portfolio architekta — **Yaroslav Matvieiev**. Status: **MVP**, obecnie budowana jest tylko podstrona `/portfolio` (lista projektów). Strona "O mnie" jest odłożona na kolejną wersję po MVP.
 
 Autor jest architektem i fullstack developerem (znajomość MERN: React, Node.js, MongoDB, Express, Redux Toolkit), umie samodzielnie czytać i poprawiać kod — nie trzeba tłumaczyć podstaw JS/React, ale warto tłumaczyć niuanse Next.js App Router i Framer Motion.
 
@@ -15,7 +15,7 @@ Autor jest architektem i fullstack developerem (znajomość MERN: React, Node.js
 - **Framework**: Next.js, App Router, TypeScript
 - **Styling**: Tailwind CSS (plus `prettier-plugin-tailwindcss` do sortowania klas)
 - **Font**: Elms Sans (Google Fonts)
-- **Animacje**: Framer Motion — kluczowa technika to `layoutId` do animacji rozwijania pasów projektu w galerię
+- **Animacje**: Framer Motion — do płynnego wyrównywania projektu na kliknięcie (scroll pionowy) i drobnych przejść; bez `layoutId` do rozwijania pasów (koncepcja usunięta, patrz sekcja UX)
 - **Obrazy**: `next/image`, lazy loading, `placeholder="blur"`
 - **Hosting frontend**: Vercel (plan Hobby/free)
 - **Repozytorium**: GitHub
@@ -77,24 +77,25 @@ Przykład:
 - `/portfolio` — lista projektów
 - `/portfolio/nazwa-projektu` — rozwinięty projekt
 - Technika: **Intercepting Routes + Parallel Routes** (wzorzec modal jak Instagram/Unsplash)
-- Wejście w projekt dodaje wpis do historii przeglądarki — przycisk "wstecz" musi działać
-- Bezpośredni link `/portfolio/nazwa-projektu` od razu otwiera widok rozwinięty tego projektu; reszta listy doładowuje się w tle
+- Klikniecie na projekt dodaje wpis do historii przeglądarki — przycisk "wstecz" musi działać
+- Bezpośredni link `/portfolio/nazwa-projektu` od razu otwiera cala liste w miejscu tego projektu; reszta listy doładowuje się w tle
 
-### Desktop
+### Widok (jedna wersja na wszystkie urządzenia)
 
-- Widok domyślny: pionowa lista, każdy projekt to poziomy pas kilku miniaturek. Pierwsze obrazki każdego projektu na starcie są wycentrowane mniej więcej na środku ekranu wzdłuż osi pionowej (jak w typowej pionowej liście). Kiedy wchodzimy w pas projektu (rozwinięcie), można przewijać zdjęcia w boki, a sam pas rozciąga się do obu bocznych krawędzi ekranu. Plakietka z tekstem (tytuł/lokalizacja/rok itp.) przewija się razem ze zdjęciami w pasie — zachowuje się jak dodatkowy element "na pozycji obrazka 0", czyli tuż przed pierwszym zdjęciem, nie jako statyczny nagłówek nad pasem.
-- Klik na pas płynnie rozwija go (animacja `layoutId` Framer Motion) do **~90% wysokości ekranu**, nie na pełny ekran — u góry i u dołu ma zostać widoczny mały, obcięty fragment obrazków sąsiednich projektów (górnego i dolnego), żeby zachować poczucie bycia wewnątrz głównej pionowej listy, a nie w oddzielnym pełnoekranowym widoku.
-- Scroll pionowy (myszka/trackpad) zawsze steruje pionową listą. **Jeśli projekt jest rozwinięty, pierwszy scroll zwija go z powrotem do pasa, kolejny scroll przewija listę.** To nie jest zwykłe zagnieżdżone przewijanie — wymaga własnej logiki przechwytywania scrolla.
-- Przesuwanie zdjęć w rozwiniętym projekcie **tylko** przez klik+drag albo gest poziomy trackpada (`deltaX`) — **nigdy** przez zwykły scroll kołem myszy.
-- **Zachowanie pozycji scrolla poziomego przy zwijaniu**: jeśli użytkownik przesunął już poziomo obrazki w rozwiniętym projekcie i wychodzi z niego scrollem pionowym, projekt się pomniejsza — ale nie do początkowego (100%) rozmiaru pasa, a do **200% początkowego rozmiaru**. Dzięki temu widać na pierwszy rzut oka, które projekty na liście zostały już przeglądnięte (są większe niż nieotwierane). Pozycja poziomego przewijania zdjęć **musi zostać zapamiętana** — po ponownym rozwinięciu tego projektu galeria ma wrócić w to samo miejsce, w którym została zostawiona, a nie resetować się do stanu początkowego. Wymaga trzymania stanu przewinięcia poziomego oraz stanu "odwiedzony/rozmiar" per-projekt (np. w komponencie nadrzędnym listy albo w kontekście/store), niezależnie od aktualnego stanu rozwinięcia/zwinięcia.
+> Jedna wspólna logika interakcji dla desktopu i mobile, oparta o zasady mobilne.
 
-### Mobile
+- Widok domyślny na każdym urządzeniu i rozmiarze ekranu: pionowa lista projektów, każdy projekt od razu jako zbliżony, praktycznie pełnoekranowy pas. Plakietka z tekstem (tytuł/lokalizacja/rok itp.) przewija się razem ze zdjęciami jako dodatkowy element "na pozycji obrazka 0", tuż przed pierwszym zdjęciem.
+  Ale po pierwszym otwarciu strony poziome pasy zdjec projektow sa ustawione tak ze na poziomym srodku ekranu jest 1sze zdjecie pierwszego projektu (a tekst po lewej od niego).
+  1sze zdjecia pozostalych projektow sa dorownane lewa krawedzia do 1szego zdjecia pierwszego projektu
+  Rozmiar zdjec:
+  Ekran pionowy: zeby poziome zdjecia miescily sie na 80% szerokosci ekranu
+  Ekran poziomy: zeby poziome zdjecia miescily sie na 80% wysokosci ekranu
+- **Oś pionowa (między projektami)**: zwykłe, swobodne przewijanie listy (kółko myszy/trackpad na desktopie, swipe na dotyku) — bez automatycznego snapowania w trakcie przewijania. Kliknięcie na widoczny projekt dosuwa/wyrównuje go do osi pionowej ekranu (i zmienia adres w przegladarce na link do tego konkretnego proejktu); jeśli to jeden z krańcowych elementów listy i nie da się go dosunąć dokładnie na środek, lista przewija się tylko tyle, ile się da.
+- **Oś pozioma (zdjęcia w obrębie projektu)**: przesuwanie **tylko** przez klik+drag albo gest poziomy trackpada/swipe dotykowy (`deltaX`) — **nigdy** przez zwykły scroll kołem myszy (pionowy `deltaY` ma zawsze przewijać listę, nie zdjęcia).
+- Oba gesty są **rozłączne, nie diagonalne** — nie da się jednym ruchem jednocześnie przewinąć listę i przesunąć zdjęcia. Aplikacja rozpoznaje dominującą oś ruchu na starcie gestu i przypisuje go do jednej z dwóch osi.
+- **Pozycja poziomego przewinięcia zdjęć jest zapamiętywana per-projekt**, niezależnie od tego, czy projekt jest aktualnie widoczny na ekranie — po powrocie do niego (przewinięcie listy z powrotem lub wejście przez link `/portfolio/nazwa-projektu`) galeria wraca w to samo miejsce, w którym została zostawiona.
 
-- Widok domyślny: od razu pełnoekranowe, zbliżone pasy (bez etapu zwiniętej miniatury jak na desktopie)
-- Swipe pionowy: przełącza między projektami
-- Swipe poziomy: przełącza między zdjęciami w obrębie jednego projektu
-
-### Sortowanie
+### Sortowanie (aktualnie nie realizowane)
 
 - Jeden przycisk podzielony na dwie opcje, w prawym górnym rogu strony
 - Domyślne: **Relevance** (sortowanie po `rating`, ukryte przed użytkownikiem)
@@ -103,7 +104,7 @@ Przykład:
 ### Obrazy
 
 - Lazy loading + `placeholder="blur"` przez `next/image`
-- Powód: część projektów ma nawet kilkanaście zdjęć — nie ładować wszystkiego naraz
+- Wszystkie obrazki laduja sie w tle, ale w pierwszej kolejnosci sasiednie od przegladanego projekty
 
 ### SEO
 
@@ -155,12 +156,9 @@ Rekomendowane rozszerzenia: Prettier, ESLint, Error Lens, GitLens, ES7+ React/Re
 
 ## Kolejność prac (roadmap MVP)
 
-1. ~~Zdecydować pole `month` vs pełna data, napisać `projects.json`, zbudować statyczny komponent listy desktopowej~~ — **zrobione**. Pozostało do zweryfikowania: czy obecna statyczna struktura komponentów (dane, typy, podział na `ProjectRow`/`ProjectList` itp.) jest wspólna i wystarczająca do zrealizowania **jednocześnie** wersji mobilnej i desktopowej bez duplikacji logiki — kod ma być krótki, ale przede wszystkim czytelny. Zanim przejdziesz do animacji, poproś Claude Code o przegląd tej struktury pod kątem: (a) czy layout mobile/desktop rozjeżdża się przez media queries w JSX czy przez osobne komponenty, (b) czy typy danych są w jednym miejscu (`types.ts`) i reużywane, (c) czy nie ma zduplikowanej logiki renderowania miniatur między wariantami.
 2. Skonfigurować Intercepting Routes + Parallel Routes + SEO meta tagi.
-3. Dodać Framer Motion i animacje `layoutId` (rozwijanie pasa do ~90% ekranu, pomniejszenie do 200% po zwinięciu, zachowanie pozycji scrolla poziomego)
-4. Dodać logikę sortowania Relevance/Year
-5. Zbudować wariant mobilny (media query) — jeśli nie został już objęty wspólną strukturą w kroku 1
-6. Dodać lazy loading + blur placeholder na obrazkach
+3. Zbudować jeden wspólny komponent widoku projektu (pełnoekranowy pas, bez wariantu desktop/mobile) i logikę gestów: swobodny scroll pionowy między projektami + klik = wyrównanie do osi ekranu, przeciąganie/`deltaX` poziomo = przewijanie zdjęć, rozłączność obu osi, zapamiętywanie pozycji poziomej per-projekt.
+4. Dodać lazy loading + blur placeholder na obrazkach
 
 Strona "O mnie" — dopiero po MVP. Nie wrzucać całego CV, tylko przerobioną wersję marketingową.
 

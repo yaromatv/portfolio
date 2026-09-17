@@ -1,8 +1,6 @@
 import { notFound } from 'next/navigation';
 import projectsData from '@/data/projects.json';
 import { Project } from '@/types/project';
-import { getProjectImages } from '@/lib/utils';
-import ProjectGallery from '@/components/ProjectGallery';
 
 interface ModalPageProps {
   params: Promise<{ id: string }>;
@@ -17,7 +15,7 @@ export default async function InterceptedProjectModal({ params }: ModalPageProps
     notFound();
   }
 
-  const images = getProjectImages(project.id);
-
-  return <ProjectGallery project={project} images={images} />;
+  // Lista pod spodem (@children) jest już wyrównana do tego projektu przez klik w ProjectView.
+  // Ten slot istnieje tylko po to, żeby nawigacja klientowa zmieniła URL/historię bez remountu listy.
+  return null;
 }
