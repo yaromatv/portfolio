@@ -25,31 +25,24 @@ export default function ProjectView({ project, images, focusOnMount }: ProjectVi
   const sectionRef = useRef<HTMLElement | null>(null);
   const scrollerRef = useRef<HTMLDivElement | null>(null);
   const firstImageRef = useRef<HTMLDivElement | null>(null);
-  const imageWrapperRefs = useRef<(HTMLDivElement | null)[]>([]);
-  const drag = useRef({ isDown: false, startX: 0, startScrollLeft: 0, moved: false });
+  const drag = useRef({
+    isDown: false,
+    startX: 0,
+    startY: 0,
+    startScrollLeft: 0,
+    moved: false,
+    axis: null as 'x' | 'y' | null,
+  });
 
-  // Wysokość paska liczona z sygnaturki zdjęcia poziomego (bez React state — mutacja DOM
-  // musi być natychmiastowa i widoczna dla efektu centrowania scrolla poniżej, w tym samym passie).
-  useLayoutEffect(() => {
-    const landscapeImage = images.find((image) => image.width >= image.height) ?? images[0];
-    if (!landscapeImage) return;
-
-    const applyStripHeight = () => {
-      const isScreenLandscape = window.innerWidth >= window.innerHeight;
-      const height = isScreenLandscape
-        ? window.innerHeight * 0.8
-        : ((window.innerWidth * 0.8) / landscapeImage.width) * landscapeImage.height;
-
-      if (sectionRef.current) sectionRef.current.style.height = `${height}px`;
-      imageWrapperRefs.current.forEach((el) => {
-        if (el) el.style.height = `${height}px`;
-      });
-    };
-
-    applyStripHeight();
-    window.addEventListener('resize', applyStripHeight);
-    return () => window.removeEventListener('resize', applyStripHeight);
-  }, [images]);
+  // Wysokość paska liczona z proporcji zdjęcia poziomego, w czystym CSS (patrz .project-strip
+  // w globals.css) — dzięki temu jest poprawna już w HTML z serwera, bez czekania na hydrację.
+  const landscapeImage = images.find((image) => image.width >= image.height) ?? images[0];
+  const stripHeightStyle = landscapeImage
+    ? ({
+        '--ref-w': landscapeImage.width,
+        '--ref-h': landscapeImage.height,
+      } as React.CSSProperties)
+    : undefined;
 
   useLayoutEffect(() => {
     const el = scrollerRef.current;
@@ -92,18 +85,35 @@ export default function ProjectView({ project, images, focusOnMount }: ProjectVi
     drag.current = {
       isDown: true,
       startX: e.clientX,
+      startY: e.clientY,
       startScrollLeft: el.scrollLeft,
       moved: false,
+      axis: null,
     };
     el.setPointerCapture(e.pointerId);
   };
 
   const handlePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
     const el = scrollerRef.current;
-    if (!el || !drag.current.isDown) return;
-    const dx = e.clientX - drag.current.startX;
-    if (Math.abs(dx) > 3) drag.current.moved = true;
-    el.scrollLeft = drag.current.startScrollLeft - dx;
+    const state = drag.current;
+    if (!el || !state.isDown) return;
+
+    const dx = e.clientX - state.startX;
+    const dy = e.clientY - state.startY;
+
+    if (state.axis === null) {
+      if (Math.abs(dx) < 6 && Math.abs(dy) < 6) return;
+      state.axis = Math.abs(dx) > Math.abs(dy) ? 'x' : 'y';
+    }
+
+    // Oś pionowa: oddajemy gest natywnemu scrollowi strony (touch-action: pan-y).
+    if (state.axis === 'y') return;
+
+    // Oś pozioma: Safari na iOS potrafi w połowie gestu przełączyć się na natywny
+    // scroll pionowy (WebKit bug), jeśli nie przejmiemy zdarzenia jawnym preventDefault.
+    e.preventDefault();
+    if (Math.abs(dx) > 3) state.moved = true;
+    el.scrollLeft = state.startScrollLeft - dx;
   };
 
   const endDrag = (e: React.PointerEvent<HTMLDivElement>) => {
@@ -116,12 +126,21 @@ export default function ProjectView({ project, images, focusOnMount }: ProjectVi
     if (drag.current.moved) return;
     if (e.target instanceof HTMLElement && e.target.closest('a')) return;
 
-    sectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    // Nawigacja najpierw, płynny scroll dopiero w kolejnej klatce — w Safari re-render
+    // wywołany przez router.push potrafi przerwać trwającą animację scrollIntoView
+    // (skok zamiast płynnego ruchu + mignięcie obrazków).
     router.push(`/portfolio/${project.id}`, { scroll: false });
+    requestAnimationFrame(() => {
+      sectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    });
   };
 
   return (
-    <section ref={sectionRef} className="flex h-[80dvh] w-full shrink-0 items-center">
+    <section
+      ref={sectionRef}
+      style={stripHeightStyle}
+      className="project-strip flex w-full shrink-0 items-center"
+    >
       <div
         ref={scrollerRef}
         onClick={handleClick}
@@ -130,6 +149,10 @@ export default function ProjectView({ project, images, focusOnMount }: ProjectVi
         onPointerMove={handlePointerMove}
         onPointerUp={endDrag}
         onPointerLeave={endDrag}
+        onPointerCancel={endDrag}
+        // Chrome startuje natywny drag'n'drop tekstu/obrazka na wciśniętym przycisku myszy
+        // i przejmuje wtedy gest naszemu przeciąganiu.
+        onDragStart={(e) => e.preventDefault()}
         className="no-scrollbar flex h-full w-full cursor-grab touch-pan-y items-center gap-3 overflow-x-auto pl-[15vw] select-none active:cursor-grabbing"
       >
         <div className="w-56 shrink-0 self-start">
@@ -140,14 +163,14 @@ export default function ProjectView({ project, images, focusOnMount }: ProjectVi
           <ProjectImageThumbnail
             key={i}
             wrapperRef={(el) => {
-              imageWrapperRefs.current[i] = el;
               if (i === 0) firstImageRef.current = el;
             }}
             image={image}
             alt={`${project.title} - zdjecie ${i + 1}`}
             fill
             sizes="80vw"
-            wrapperClassName="h-[80dvh] shrink-0"
+            wrapperClassName="project-strip shrink-0"
+            wrapperStyle={stripHeightStyle}
             className="pointer-events-none object-contain"
           />
         ))}

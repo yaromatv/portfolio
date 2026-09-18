@@ -8,6 +8,7 @@ interface ProjectImageProps {
   sizes?: string;
   className?: string;
   wrapperClassName?: string;
+  wrapperStyle?: React.CSSProperties;
   wrapperRef?: React.Ref<HTMLDivElement>;
 }
 
@@ -18,13 +19,14 @@ export default function ProjectImage({
   sizes,
   className,
   wrapperClassName,
+  wrapperStyle,
   wrapperRef,
 }: ProjectImageProps) {
   if (fill) {
     return (
       <div
         ref={wrapperRef}
-        style={{ aspectRatio: `${image.width} / ${image.height}` }}
+        style={{ aspectRatio: `${image.width} / ${image.height}`, ...wrapperStyle }}
         className={`relative ${wrapperClassName ?? ''}`}
       >
         <Image src={image.src} alt={alt} fill sizes={sizes} className={className} />

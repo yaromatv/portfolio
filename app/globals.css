@@ -36,3 +36,18 @@ body {
 .no-scrollbar::-webkit-scrollbar {
   display: none;
 }
+
+/* Wysokość paska projektu: na ekranie pionowym liczona tak, by zdjęcie referencyjne
+   (--ref-w / --ref-h, ustawiane inline per projekt) miało 80% szerokości ekranu; na
+   ekranie poziomym — 80% wysokości ekranu. Liczone w czystym CSS (nie w JS po hydracji),
+   żeby na urządzeniach mobilnych nie było błysku źle przeskalowanego zdjęcia przed
+   uruchomieniem JS. */
+.project-strip {
+  height: calc(80vw * var(--ref-h) / var(--ref-w));
+}
+
+@media (orientation: landscape) {
+  .project-strip {
+    height: 80vh;
+  }
+}
