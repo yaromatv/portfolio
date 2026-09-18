@@ -20,6 +20,10 @@ export default function PortfolioListClient({
   // Jedna obsługa kółka na całą listę — scroll pionowy dotyczy strony, nie pojedynczego paska.
   useEffect(() => enableSmoothWheelScroll(), []);
 
+  // Wejściowy projekt to ten z linku bezpośredniego, a bez linku — pierwszy na liście.
+  // Jego pierwsze zdjęcie jest realnym LCP strony, więc dostaje preload.
+  const entryProjectId = focusProjectId ?? projects[0]?.id;
+
   return (
     <div className="flex flex-col gap-3 py-8">
       {projects.map((project) => (
@@ -28,6 +32,7 @@ export default function PortfolioListClient({
           project={project}
           images={imagesByProject[project.id] ?? []}
           focusOnMount={project.id === focusProjectId}
+          isEntryProject={project.id === entryProjectId}
         />
       ))}
     </div>
