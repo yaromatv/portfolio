@@ -1,8 +1,10 @@
 'use client';
 
-import { useLayoutEffect, useRef } from 'react';
+import { useEffect, useLayoutEffect, useRef } from 'react';
 import { Project } from '@/types/project';
 import { ProjectImage } from '@/lib/utils';
+import { createVelocityTracker, glide, Glide } from '@/lib/momentum';
+import { cancelWheelMomentum } from '@/lib/smoothWheel';
 import {
   getRememberedScrollLeft,
   getSharedInitialScrollLeft,
@@ -24,6 +26,8 @@ export default function ProjectView({ project, images, focusOnMount }: ProjectVi
   const scrollerRef = useRef<HTMLDivElement | null>(null);
   const firstImageRef = useRef<HTMLDivElement | null>(null);
   const touchStart = useRef({ x: 0, y: 0 });
+  const pointerVelocity = useRef(createVelocityTracker());
+  const glideRef = useRef<Glide | null>(null);
   const drag = useRef({
     isDown: false,
     startX: 0,
@@ -71,6 +75,8 @@ export default function ProjectView({ project, images, focusOnMount }: ProjectVi
     }
   }, [project.id, focusOnMount]);
 
+  useEffect(() => () => glideRef.current?.stop(), []);
+
   // Dotyk obsługuje sama przeglądarka (brak touch-action: pan-y na kontenerze): daje to
   // bezwładność i gumowanie identyczne jak przy scrollu pionowym, oraz natywne blokowanie
   // osi. Te listenery są pasywne — służą tylko do odróżnienia swipe'a od tapnięcia.
@@ -97,6 +103,10 @@ export default function ProjectView({ project, images, focusOnMount }: ProjectVi
     if (e.target instanceof HTMLElement && e.target.closest('a')) return;
     const el = scrollerRef.current;
     if (!el) return;
+    // Złapanie paska w trakcie dobiegu zatrzymuje go w miejscu — jak palec na ekranie.
+    glideRef.current?.stop();
+    cancelWheelMomentum();
+    pointerVelocity.current.reset();
     drag.current = {
       isDown: true,
       startX: e.clientX,
@@ -125,15 +135,34 @@ export default function ProjectView({ project, images, focusOnMount }: ProjectVi
     // Oś pionowa: oddajemy gest natywnemu scrollowi strony.
     if (state.axis === 'y') return;
 
+    pointerVelocity.current.push(e.clientX);
     e.preventDefault();
     if (Math.abs(dx) > 3) state.moved = true;
     el.scrollLeft = state.startScrollLeft - dx;
   };
 
+  // Puszczenie przycisku w ruchu nie zatrzymuje paska od razu — jedzie dalej z prędkością
+  // gestu i wygasa, tak jak po swipie palcem czy rzucie na touchpadzie.
+  const startGlide = (el: HTMLDivElement) => {
+    const startScrollLeft = el.scrollLeft;
+    glideRef.current = glide({
+      // Zawartość jedzie w stronę przeciwną do kursora: kursor w prawo = scrollLeft maleje.
+      velocity: -pointerVelocity.current.velocity(),
+      onFrame: (offset) => {
+        const next = startScrollLeft + offset;
+        el.scrollLeft = next;
+        // Pasek dobił do krańca — dalszy dobieg nic już nie zmieni.
+        return Math.abs(el.scrollLeft - next) < 1;
+      },
+    });
+  };
+
   const endDrag = (e: React.PointerEvent<HTMLDivElement>) => {
     const el = scrollerRef.current;
     if (el?.hasPointerCapture(e.pointerId)) el.releasePointerCapture(e.pointerId);
-    drag.current.isDown = false;
+    const state = drag.current;
+    if (el && state.isDown && state.axis === 'x' && state.moved) startGlide(el);
+    state.isDown = false;
   };
 
   const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -145,6 +174,8 @@ export default function ProjectView({ project, images, focusOnMount }: ProjectVi
     // RSC i przerysowanie całej listy — na iOS objawiało się to zniknięciem zdjęć na
     // moment. Next.js synchronizuje pushState z routerem, więc przycisk wstecz działa.
     window.history.pushState(null, '', `/portfolio/${project.id}`);
+    // Dobieg kółka ustawia scrollTop co klatkę i przerwałby płynne dosuwanie projektu.
+    cancelWheelMomentum();
     sectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
   };
 
