@@ -1,7 +1,6 @@
 'use client';
 
-import { useEffect, useLayoutEffect, useRef } from 'react';
-import { useRouter } from 'next/navigation';
+import { useLayoutEffect, useRef } from 'react';
 import { Project } from '@/types/project';
 import { ProjectImage } from '@/lib/utils';
 import {
@@ -21,10 +20,10 @@ interface ProjectViewProps {
 }
 
 export default function ProjectView({ project, images, focusOnMount }: ProjectViewProps) {
-  const router = useRouter();
   const sectionRef = useRef<HTMLElement | null>(null);
   const scrollerRef = useRef<HTMLDivElement | null>(null);
   const firstImageRef = useRef<HTMLDivElement | null>(null);
+  const touchStart = useRef({ x: 0, y: 0 });
   const drag = useRef({
     isDown: false,
     startX: 0,
@@ -72,68 +71,19 @@ export default function ProjectView({ project, images, focusOnMount }: ProjectVi
     }
   }, [project.id, focusOnMount]);
 
-  // Dotyk na natywnych zdarzeniach touch, a nie Pointer Events: na iOS WebKit decyduje
-  // o przeznaczeniu gestu już przy pierwszym ruchu palca i anuluje pointer events
-  // (pointercancel), przez co przeciąganie zatrzymywało się po kilku pikselach. Tylko
-  // preventDefault na nie-pasywnym touchmove skutecznie odbiera gest przeglądarce —
-  // React rejestruje onTouchMove jako pasywny, więc listener musi być ręczny.
-  useEffect(() => {
-    const el = scrollerRef.current;
-    if (!el) return;
+  // Dotyk obsługuje sama przeglądarka (brak touch-action: pan-y na kontenerze): daje to
+  // bezwładność i gumowanie identyczne jak przy scrollu pionowym, oraz natywne blokowanie
+  // osi. Te listenery są pasywne — służą tylko do odróżnienia swipe'a od tapnięcia.
+  const handleTouchStart = (e: React.TouchEvent<HTMLDivElement>) => {
+    touchStart.current = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+    drag.current.moved = false;
+  };
 
-    let startX = 0;
-    let startY = 0;
-    let startScrollLeft = 0;
-    let axis: 'x' | 'y' | null = null;
-    let active = false;
-
-    const onTouchStart = (e: TouchEvent) => {
-      if (e.touches.length !== 1) {
-        active = false;
-        return;
-      }
-      active = true;
-      axis = null;
-      startX = e.touches[0].clientX;
-      startY = e.touches[0].clientY;
-      startScrollLeft = el.scrollLeft;
-      drag.current.moved = false;
-    };
-
-    const onTouchMove = (e: TouchEvent) => {
-      if (!active || e.touches.length !== 1) return;
-      const dx = e.touches[0].clientX - startX;
-      const dy = e.touches[0].clientY - startY;
-
-      // Próg celowo niski: decyzja o osi musi zapaść, zanim WebKit sam uzna gest
-      // za przewijanie strony, bo wtedy preventDefault jest już bezskuteczny.
-      if (axis === null) {
-        if (Math.abs(dx) < 4 && Math.abs(dy) < 4) return;
-        axis = Math.abs(dx) > Math.abs(dy) ? 'x' : 'y';
-      }
-      if (axis === 'y') return;
-
-      e.preventDefault();
-      drag.current.moved = true;
-      el.scrollLeft = startScrollLeft - dx;
-    };
-
-    const onTouchEnd = () => {
-      active = false;
-    };
-
-    el.addEventListener('touchstart', onTouchStart, { passive: true });
-    el.addEventListener('touchmove', onTouchMove, { passive: false });
-    el.addEventListener('touchend', onTouchEnd, { passive: true });
-    el.addEventListener('touchcancel', onTouchEnd, { passive: true });
-
-    return () => {
-      el.removeEventListener('touchstart', onTouchStart);
-      el.removeEventListener('touchmove', onTouchMove);
-      el.removeEventListener('touchend', onTouchEnd);
-      el.removeEventListener('touchcancel', onTouchEnd);
-    };
-  }, []);
+  const handleTouchMove = (e: React.TouchEvent<HTMLDivElement>) => {
+    const dx = e.touches[0].clientX - touchStart.current.x;
+    const dy = e.touches[0].clientY - touchStart.current.y;
+    if (Math.abs(dx) > 8 || Math.abs(dy) > 8) drag.current.moved = true;
+  };
 
   const handleScroll = () => {
     const el = scrollerRef.current;
@@ -142,8 +92,7 @@ export default function ProjectView({ project, images, focusOnMount }: ProjectVi
   };
 
   const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
-    // Dotyk ma własną obsługę na natywnych zdarzeniach touch (patrz useEffect niżej) —
-    // Pointer Events na iOS są anulowane przez WebKit w trakcie gestu.
+    // Dotyk przewija natywnie — ręczne przeciąganie jest potrzebne tylko myszy.
     if (e.pointerType === 'touch') return;
     if (e.target instanceof HTMLElement && e.target.closest('a')) return;
     const el = scrollerRef.current;
@@ -191,13 +140,12 @@ export default function ProjectView({ project, images, focusOnMount }: ProjectVi
     if (drag.current.moved) return;
     if (e.target instanceof HTMLElement && e.target.closest('a')) return;
 
-    // Nawigacja najpierw, płynny scroll dopiero w kolejnej klatce — w Safari re-render
-    // wywołany przez router.push potrafi przerwać trwającą animację scrollIntoView
-    // (skok zamiast płynnego ruchu + mignięcie obrazków).
-    router.push(`/portfolio/${project.id}`, { scroll: false });
-    requestAnimationFrame(() => {
-      sectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    });
+    // Natywne pushState zamiast router.push: przechwycony modal renderuje null, więc
+    // nawigacja Next.js służyłaby tylko zmianie adresu, a pociągałaby za sobą pobranie
+    // RSC i przerysowanie całej listy — na iOS objawiało się to zniknięciem zdjęć na
+    // moment. Next.js synchronizuje pushState z routerem, więc przycisk wstecz działa.
+    window.history.pushState(null, '', `/portfolio/${project.id}`);
+    sectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
   };
 
   return (
@@ -215,10 +163,12 @@ export default function ProjectView({ project, images, focusOnMount }: ProjectVi
         onPointerUp={endDrag}
         onPointerLeave={endDrag}
         onPointerCancel={endDrag}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
         // Chrome startuje natywny drag'n'drop tekstu/obrazka na wciśniętym przycisku myszy
         // i przejmuje wtedy gest naszemu przeciąganiu.
         onDragStart={(e) => e.preventDefault()}
-        className="no-scrollbar flex h-full w-full cursor-grab touch-pan-y items-center gap-3 overflow-x-auto pl-6 select-none active:cursor-grabbing"
+        className="no-scrollbar flex h-full w-full cursor-grab items-center gap-3 overflow-x-auto pl-6 select-none active:cursor-grabbing"
       >
         <div className="w-56 shrink-0 self-start">
           <ProjectInfo project={project} />
