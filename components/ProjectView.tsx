@@ -19,9 +19,15 @@ interface ProjectViewProps {
   project: Project;
   images: ProjectImage[];
   focusOnMount?: boolean;
+  isEntryProject?: boolean;
 }
 
-export default function ProjectView({ project, images, focusOnMount }: ProjectViewProps) {
+export default function ProjectView({
+  project,
+  images,
+  focusOnMount,
+  isEntryProject,
+}: ProjectViewProps) {
   const sectionRef = useRef<HTMLElement | null>(null);
   const scrollerRef = useRef<HTMLDivElement | null>(null);
   const firstImageRef = useRef<HTMLDivElement | null>(null);
@@ -215,6 +221,7 @@ export default function ProjectView({ project, images, focusOnMount }: ProjectVi
             alt={`${project.title} - zdjecie ${i + 1}`}
             fill
             sizes="80vw"
+            preload={isEntryProject && i === 0}
             wrapperClassName="project-strip shrink-0"
             wrapperStyle={stripHeightStyle}
             className="pointer-events-none object-contain"
