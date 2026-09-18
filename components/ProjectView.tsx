@@ -1,6 +1,6 @@
 'use client';
 
-import { useLayoutEffect, useRef } from 'react';
+import { useEffect, useLayoutEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { Project } from '@/types/project';
 import { ProjectImage } from '@/lib/utils';
@@ -72,6 +72,69 @@ export default function ProjectView({ project, images, focusOnMount }: ProjectVi
     }
   }, [project.id, focusOnMount]);
 
+  // Dotyk na natywnych zdarzeniach touch, a nie Pointer Events: na iOS WebKit decyduje
+  // o przeznaczeniu gestu już przy pierwszym ruchu palca i anuluje pointer events
+  // (pointercancel), przez co przeciąganie zatrzymywało się po kilku pikselach. Tylko
+  // preventDefault na nie-pasywnym touchmove skutecznie odbiera gest przeglądarce —
+  // React rejestruje onTouchMove jako pasywny, więc listener musi być ręczny.
+  useEffect(() => {
+    const el = scrollerRef.current;
+    if (!el) return;
+
+    let startX = 0;
+    let startY = 0;
+    let startScrollLeft = 0;
+    let axis: 'x' | 'y' | null = null;
+    let active = false;
+
+    const onTouchStart = (e: TouchEvent) => {
+      if (e.touches.length !== 1) {
+        active = false;
+        return;
+      }
+      active = true;
+      axis = null;
+      startX = e.touches[0].clientX;
+      startY = e.touches[0].clientY;
+      startScrollLeft = el.scrollLeft;
+      drag.current.moved = false;
+    };
+
+    const onTouchMove = (e: TouchEvent) => {
+      if (!active || e.touches.length !== 1) return;
+      const dx = e.touches[0].clientX - startX;
+      const dy = e.touches[0].clientY - startY;
+
+      // Próg celowo niski: decyzja o osi musi zapaść, zanim WebKit sam uzna gest
+      // za przewijanie strony, bo wtedy preventDefault jest już bezskuteczny.
+      if (axis === null) {
+        if (Math.abs(dx) < 4 && Math.abs(dy) < 4) return;
+        axis = Math.abs(dx) > Math.abs(dy) ? 'x' : 'y';
+      }
+      if (axis === 'y') return;
+
+      e.preventDefault();
+      drag.current.moved = true;
+      el.scrollLeft = startScrollLeft - dx;
+    };
+
+    const onTouchEnd = () => {
+      active = false;
+    };
+
+    el.addEventListener('touchstart', onTouchStart, { passive: true });
+    el.addEventListener('touchmove', onTouchMove, { passive: false });
+    el.addEventListener('touchend', onTouchEnd, { passive: true });
+    el.addEventListener('touchcancel', onTouchEnd, { passive: true });
+
+    return () => {
+      el.removeEventListener('touchstart', onTouchStart);
+      el.removeEventListener('touchmove', onTouchMove);
+      el.removeEventListener('touchend', onTouchEnd);
+      el.removeEventListener('touchcancel', onTouchEnd);
+    };
+  }, []);
+
   const handleScroll = () => {
     const el = scrollerRef.current;
     if (!el) return;
@@ -79,6 +142,9 @@ export default function ProjectView({ project, images, focusOnMount }: ProjectVi
   };
 
   const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    // Dotyk ma własną obsługę na natywnych zdarzeniach touch (patrz useEffect niżej) —
+    // Pointer Events na iOS są anulowane przez WebKit w trakcie gestu.
+    if (e.pointerType === 'touch') return;
     if (e.target instanceof HTMLElement && e.target.closest('a')) return;
     const el = scrollerRef.current;
     if (!el) return;
@@ -94,6 +160,7 @@ export default function ProjectView({ project, images, focusOnMount }: ProjectVi
   };
 
   const handlePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (e.pointerType === 'touch') return;
     const el = scrollerRef.current;
     const state = drag.current;
     if (!el || !state.isDown) return;
@@ -106,11 +173,9 @@ export default function ProjectView({ project, images, focusOnMount }: ProjectVi
       state.axis = Math.abs(dx) > Math.abs(dy) ? 'x' : 'y';
     }
 
-    // Oś pionowa: oddajemy gest natywnemu scrollowi strony (touch-action: pan-y).
+    // Oś pionowa: oddajemy gest natywnemu scrollowi strony.
     if (state.axis === 'y') return;
 
-    // Oś pozioma: Safari na iOS potrafi w połowie gestu przełączyć się na natywny
-    // scroll pionowy (WebKit bug), jeśli nie przejmiemy zdarzenia jawnym preventDefault.
     e.preventDefault();
     if (Math.abs(dx) > 3) state.moved = true;
     el.scrollLeft = state.startScrollLeft - dx;
@@ -153,7 +218,7 @@ export default function ProjectView({ project, images, focusOnMount }: ProjectVi
         // Chrome startuje natywny drag'n'drop tekstu/obrazka na wciśniętym przycisku myszy
         // i przejmuje wtedy gest naszemu przeciąganiu.
         onDragStart={(e) => e.preventDefault()}
-        className="no-scrollbar flex h-full w-full cursor-grab touch-pan-y items-center gap-3 overflow-x-auto pl-[15vw] select-none active:cursor-grabbing"
+        className="no-scrollbar flex h-full w-full cursor-grab touch-pan-y items-center gap-3 overflow-x-auto pl-6 select-none active:cursor-grabbing"
       >
         <div className="w-56 shrink-0 self-start">
           <ProjectInfo project={project} />
