@@ -199,7 +199,7 @@ export default function ProjectView({ project, images, focusOnMount }: ProjectVi
         // Chrome startuje natywny drag'n'drop tekstu/obrazka na wciśniętym przycisku myszy
         // i przejmuje wtedy gest naszemu przeciąganiu.
         onDragStart={(e) => e.preventDefault()}
-        className="no-scrollbar flex h-full w-full cursor-grab items-center gap-3 overflow-x-auto pl-6 select-none active:cursor-grabbing"
+        className="no-scrollbar flex h-full w-full items-center gap-3 overflow-x-auto pl-6 select-none"
       >
         <div className="w-56 shrink-0 self-start">
           <ProjectInfo project={project} />
