@@ -3,11 +3,15 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  --cursor: #000000;
+  --cursor-hover: #9ca3af;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-cursor: var(--cursor);
+  --color-cursor-hover: var(--cursor-hover);
   --font-sans: var(--font-elms-sans);
 }
 
@@ -15,6 +19,10 @@
   :root {
     --background: #0a0a0a;
     --foreground: #ededed;
+    /* Czarna kropka na czarnym tle byłaby niewidoczna — w ciemnym motywie kursor jest
+       jasny, a hover tak samo jak w jasnym zbiega do szarości. */
+    --cursor: #ededed;
+    --cursor-hover: #6b7280;
   }
 }
 
@@ -26,6 +34,18 @@ body {
 html,
 body {
   overflow-x: hidden;
+}
+
+/* Natywny kursor chowamy tylko tam, gdzie w ogóle istnieje — przy myszy. Selektor
+   uniwersalny jest tu konieczny: `html { cursor: none }` tylko dziedziczy, a dziedziczenie
+   przegrywa z regułą ustawioną wprost na elemencie (np. `cursor: pointer` ze stylów
+   przeglądarki na <a>). Rysowaniem zajmuje się <CustomCursor />. */
+@media (pointer: fine) {
+  *,
+  *::before,
+  *::after {
+    cursor: none;
+  }
 }
 
 .no-scrollbar {

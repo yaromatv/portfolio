@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { Elms_Sans } from 'next/font/google';
+import CustomCursor from '@/components/CustomCursor';
 import './globals.css';
 
 const elmsSans = Elms_Sans({
@@ -21,6 +22,7 @@ export default function RootLayout({
     <html lang="pl" className={`${elmsSans.variable} h-full antialiased`}>
       <body className="flex min-h-full flex-col font-sans" suppressHydrationWarning>
         {children}
+        <CustomCursor />
       </body>
     </html>
   );
