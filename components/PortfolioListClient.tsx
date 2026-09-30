@@ -25,7 +25,7 @@ export default function PortfolioListClient({
   const entryProjectId = focusProjectId ?? projects[0]?.id;
 
   return (
-    <div className="flex flex-col gap-3 py-8">
+    <div className="flex flex-col gap-3">
       {projects.map((project) => (
         <ProjectView
           key={project.id}
