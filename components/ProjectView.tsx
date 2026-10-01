@@ -20,6 +20,7 @@ interface ProjectViewProps {
   images: ProjectImage[];
   focusOnMount?: boolean;
   isEntryProject?: boolean;
+  isFirstInList?: boolean;
 }
 
 export default function ProjectView({
@@ -27,6 +28,7 @@ export default function ProjectView({
   images,
   focusOnMount,
   isEntryProject,
+  isFirstInList,
 }: ProjectViewProps) {
   const sectionRef = useRef<HTMLElement | null>(null);
   const scrollerRef = useRef<HTMLDivElement | null>(null);
@@ -222,6 +224,9 @@ export default function ProjectView({
             fill
             sizes="80vw"
             preload={isEntryProject && i === 0}
+            // Przy wejściu przez link do innego projektu góra listy maluje się, zanim strona
+            // dosunie się do celu — pierwsze zdjęcie listy bywa wtedy LCP, więc nie może być lazy.
+            loading={isFirstInList && !isEntryProject && i === 0 ? 'eager' : undefined}
             wrapperClassName="project-strip shrink-0"
             wrapperStyle={stripHeightStyle}
             className="pointer-events-none object-contain"

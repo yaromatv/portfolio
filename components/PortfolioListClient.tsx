@@ -26,13 +26,14 @@ export default function PortfolioListClient({
 
   return (
     <div className="flex flex-col gap-3">
-      {projects.map((project) => (
+      {projects.map((project, index) => (
         <ProjectView
           key={project.id}
           project={project}
           images={imagesByProject[project.id] ?? []}
           focusOnMount={project.id === focusProjectId}
           isEntryProject={project.id === entryProjectId}
+          isFirstInList={index === 0}
         />
       ))}
     </div>

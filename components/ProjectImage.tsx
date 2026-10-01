@@ -11,6 +11,7 @@ interface ProjectImageProps {
   wrapperStyle?: React.CSSProperties;
   wrapperRef?: React.Ref<HTMLDivElement>;
   preload?: boolean;
+  loading?: 'eager' | 'lazy';
 }
 
 export default function ProjectImage({
@@ -23,6 +24,7 @@ export default function ProjectImage({
   wrapperStyle,
   wrapperRef,
   preload,
+  loading,
 }: ProjectImageProps) {
   if (fill) {
     return (
@@ -31,7 +33,15 @@ export default function ProjectImage({
         style={{ aspectRatio: `${image.width} / ${image.height}`, ...wrapperStyle }}
         className={`relative ${wrapperClassName ?? ''}`}
       >
-        <Image src={image.src} alt={alt} fill sizes={sizes} className={className} preload={preload} />
+        <Image
+          src={image.src}
+          alt={alt}
+          fill
+          sizes={sizes}
+          className={className}
+          preload={preload}
+          loading={loading}
+        />
       </div>
     );
   }
@@ -44,6 +54,7 @@ export default function ProjectImage({
       height={image.height}
       className={className}
       preload={preload}
+      loading={loading}
     />
   );
 }
