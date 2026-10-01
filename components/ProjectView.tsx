@@ -14,6 +14,7 @@ import {
 } from '@/lib/galleryScrollMemory';
 import ProjectInfo from './ProjectInfo';
 import ProjectImageThumbnail from './ProjectImage';
+import ProjectVideo from './ProjectVideo';
 
 interface ProjectViewProps {
   project: Project;
@@ -213,25 +214,43 @@ export default function ProjectView({
           <ProjectInfo project={project} />
         </div>
 
-        {images.map((image, i) => (
-          <ProjectImageThumbnail
-            key={i}
-            wrapperRef={(el) => {
-              if (i === 0) firstImageRef.current = el;
-            }}
-            image={image}
-            alt={`${project.title} - zdjecie ${i + 1}`}
-            fill
-            sizes="80vw"
-            preload={isEntryProject && i === 0}
-            // Przy wejściu przez link do innego projektu góra listy maluje się, zanim strona
-            // dosunie się do celu — pierwsze zdjęcie listy bywa wtedy LCP, więc nie może być lazy.
-            loading={isFirstInList && !isEntryProject && i === 0 ? 'eager' : undefined}
-            wrapperClassName="project-strip shrink-0"
-            wrapperStyle={stripHeightStyle}
-            className="pointer-events-none object-contain"
-          />
-        ))}
+        {images.map((image, i) => {
+          const wrapperRef = (el: HTMLDivElement | null) => {
+            if (i === 0) firstImageRef.current = el;
+          };
+
+          if (image.type === 'video') {
+            return (
+              <ProjectVideo
+                key={i}
+                wrapperRef={wrapperRef}
+                video={image}
+                label={`${project.title} - film ${i + 1}`}
+                wrapperClassName="project-strip shrink-0"
+                wrapperStyle={stripHeightStyle}
+                className="pointer-events-none object-contain"
+              />
+            );
+          }
+
+          return (
+            <ProjectImageThumbnail
+              key={i}
+              wrapperRef={wrapperRef}
+              image={image}
+              alt={`${project.title} - zdjecie ${i + 1}`}
+              fill
+              sizes="80vw"
+              preload={isEntryProject && i === 0}
+              // Przy wejściu przez link do innego projektu góra listy maluje się, zanim strona
+              // dosunie się do celu — pierwsze zdjęcie listy bywa wtedy LCP, więc nie może być lazy.
+              loading={isFirstInList && !isEntryProject && i === 0 ? 'eager' : undefined}
+              wrapperClassName="project-strip shrink-0"
+              wrapperStyle={stripHeightStyle}
+              className="pointer-events-none object-contain"
+            />
+          );
+        })}
       </div>
     </section>
   );
