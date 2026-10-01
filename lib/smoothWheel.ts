@@ -30,9 +30,22 @@ let frame = 0;
 let lastFrameAt = 0;
 let lastWheelAt = 0;
 let gestureIsMouse: boolean | null = null;
+// Przewijany element; `null` = całe okno (lista projektów). Naraz aktywna jest jedna strona,
+// więc wystarcza jeden wspólny stan.
+let scroller: HTMLElement | null = null;
 
 function maxScroll(): number {
+  if (scroller) return Math.max(0, scroller.scrollHeight - scroller.clientHeight);
   return Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
+}
+
+function scrollPosition(): number {
+  return scroller ? scroller.scrollTop : window.scrollY;
+}
+
+function scrollToPosition(top: number): void {
+  if (scroller) scroller.scrollTop = top;
+  else window.scrollTo(0, top);
 }
 
 /**
@@ -69,7 +82,9 @@ function isMouseWheel(e: WheelEvent): boolean {
 
 function pixelDelta(e: WheelEvent): number {
   if (e.deltaMode === 1) return e.deltaY * LINE_PX;
-  if (e.deltaMode === 2) return e.deltaY * window.innerHeight * PAGE_RATIO;
+  if (e.deltaMode === 2) {
+    return e.deltaY * (scroller ? scroller.clientHeight : window.innerHeight) * PAGE_RATIO;
+  }
   return e.deltaY;
 }
 
@@ -87,16 +102,16 @@ function tick(): void {
 
   // Cel przycinamy co klatkę, bo wysokość dokumentu rośnie w miarę doładowywania zdjęć.
   target = Math.max(0, Math.min(maxScroll(), target));
-  const current = window.scrollY;
+  const current = scrollPosition();
   const distance = target - current;
 
   if (Math.abs(distance) < EPSILON_PX) {
-    window.scrollTo(0, target);
+    scrollToPosition(target);
     stopGlide();
     return;
   }
 
-  window.scrollTo(0, current + distance * (1 - Math.exp(-dt / TIME_CONSTANT_MS)));
+  scrollToPosition(current + distance * (1 - Math.exp(-dt / TIME_CONSTANT_MS)));
   frame = requestAnimationFrame(tick);
 }
 
@@ -106,9 +121,16 @@ export function cancelWheelMomentum(): void {
   gestureIsMouse = null;
 }
 
-/** Podpina obsługę pod okno; zwraca funkcję odpinającą. */
-export function enableSmoothWheelScroll(): () => void {
-  const onWheel = (e: WheelEvent) => {
+/**
+ * Podpina obsługę pod okno albo — gdy podany jest `element` — pod kontener z własnym
+ * przewijaniem (`overflow-y-auto`); zwraca funkcję odpinającą.
+ */
+export function enableSmoothWheelScroll(element?: HTMLElement): () => void {
+  const source: EventTarget = element ?? window;
+  scroller = element ?? null;
+
+  const onWheel = (event: Event) => {
+    const e = event as WheelEvent;
     // ctrl+wheel to zoom przeglądarki, a `defaultPrevented` oznacza, że zdarzeniem zajął
     // się już ktoś inny.
     if (e.ctrlKey || e.defaultPrevented || prefersReducedMotion()) return;
@@ -122,7 +144,7 @@ export function enableSmoothWheelScroll(): () => void {
     if (delta === 0) return;
 
     e.preventDefault();
-    const base = target ?? window.scrollY;
+    const base = target ?? scrollPosition();
     target = Math.max(0, Math.min(maxScroll(), base + delta * DISTANCE_SCALE));
     if (!frame) {
       lastFrameAt = performance.now();
@@ -130,9 +152,10 @@ export function enableSmoothWheelScroll(): () => void {
     }
   };
 
-  window.addEventListener('wheel', onWheel, { passive: false });
+  source.addEventListener('wheel', onWheel, { passive: false });
   return () => {
-    window.removeEventListener('wheel', onWheel);
+    source.removeEventListener('wheel', onWheel);
     cancelWheelMomentum();
+    scroller = null;
   };
 }

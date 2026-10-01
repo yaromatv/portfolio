@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import Image from 'next/image';
+import SmoothWheelArea from '@/components/SmoothWheelArea';
 
 export const metadata: Metadata = {
   title: 'Yaroslav Matvieiev / About',
@@ -18,7 +19,14 @@ interface TextSection {
 
 // ODSTĘP TEKSTU OD KRAWĘDZI JEGO TŁA — jedna wartość na wszystkie cztery krawędzie
 // i obie orientacje ekranu. Skala Tailwinda: p-4 = 1rem, p-6 = 1.5rem, p-8 = 2rem, p-10 = 2.5rem.
-const TEXT_PADDING = 'p-14';
+const TEXT_PADDING = 'p-16';
+
+// KOREKTA ODSTĘPU O WYSOKOŚĆ NAVBARU (navbar = h-8 = 2rem), dokładana do TEXT_PADDING:
+// poziom: góra − 1 navbar (`-mt-8`), dół + 1 navbar (`mb-8`)
+// pion: dół + 2 navbary (`mb-16`)
+// Uwaga: w poziomie TEXT_PADDING nie może być mniejszy niż p-8, bo początek tekstu
+// wyszedłby ponad górną krawędź panelu.
+const NAVBAR_OFFSET = 'landscape:-mt-8 landscape:mb-8 portrait:mb-16';
 
 // SZEROKOŚĆ PANELU Z TEKSTEM na ekranie poziomym. Obie wartości muszą być takie same:
 // pierwsza ustawia szerokość panelu, druga odsuwa zdjęcie o tyle samo od lewej,
@@ -172,13 +180,13 @@ export default function AboutPage() {
           pod panelem nie ma tu zdjęcia, więc biel/70 dawałaby w dark mode szary
           `no-scrollbar` (app/globals.css) chowa pasek przewijania
           kolor tekstu: w pionie zawsze czarny (tło jest zawsze jasne), w poziomie wg motywu */}
-      <div
+      <SmoothWheelArea
         className={`no-scrollbar landscape:bg-background absolute inset-y-0 left-0 w-full overflow-y-auto overscroll-contain bg-white/75 text-left portrait:text-neutral-900 ${PANEL_WIDTH}`}
       >
         {/* min-h-full + justify-center: tekst jest wyśrodkowany, gdy się mieści,
             a gdy jest dłuższy niż ekran — rośnie w dół i scrolluje się od góry */}
         <div className={`flex min-h-full flex-col justify-center ${TEXT_PADDING}`}>
-          <div>
+          <div className={NAVBAR_OFFSET}>
             {sections.map((section, sectionIndex) => (
               <div key={section.heading}>
                 {/* odstęp MIĘDZY SEKCJAMI — zmieniaj `mt-10` */}
@@ -199,7 +207,7 @@ export default function AboutPage() {
             ))}
           </div>
         </div>
-      </div>
+      </SmoothWheelArea>
     </main>
   );
 }

@@ -28,6 +28,8 @@ TypeScript: tak · ESLint: tak · React Compiler: nie · Tailwind: tak · katalo
 
 ## Twarde zasady (Hard Rules)
 
+- Staraj sie oszczedzac tokeny - unikaj zbednych ciezkich testow, jesli ja moge sprawdzic to wizualnie w przegladarce na bazie krotkiej i zwiezlej listy zmian ktora mi podasz
+- Odpowidaj mi zawsze po polsku
 - Domyślnie **Server Components**. Dodawaj `"use client"` tylko gdy komponent faktycznie potrzebuje hooków (`useState`, `useEffect`), obsługi zdarzeń lub Framer Motion.
 - Styling wyłącznie **Tailwind CSS** — nie używaj CSS Modules, styled-components ani inline `style={}` bez wyraźnego powodu (np. dynamiczne wartości z JS, np. `layoutId` transform).
 - Obrazy tylko przez `next/image`, nigdy `<img>`.
@@ -90,6 +92,7 @@ Przykład:
   Rozmiar zdjec:
   Ekran pionowy: zeby poziome zdjecia miescily sie na 80% szerokosci ekranu
   Ekran poziomy: zeby poziome zdjecia miescily sie na 80% wysokosci ekranu
+  Przy tym zdjecia w obrebie jednego proejktu powinny miec taka sama wykosc i tworzyc ciagly pas (z malymi odstepami miedzy zdjeciami)
 - **Oś pionowa (między projektami)**: zwykłe, swobodne przewijanie listy (kółko myszy/trackpad na desktopie, swipe na dotyku) — bez automatycznego snapowania w trakcie przewijania. Kliknięcie na widoczny projekt dosuwa/wyrównuje go do osi pionowej ekranu (i zmienia adres w przegladarce na link do tego konkretnego proejktu); jeśli to jeden z krańcowych elementów listy i nie da się go dosunąć dokładnie na środek, lista przewija się tylko tyle, ile się da.
 - **Oś pozioma (zdjęcia w obrębie projektu)**: przesuwanie **tylko** przez klik+drag albo gest poziomy trackpada/swipe dotykowy (`deltaX`) — **nigdy** przez zwykły scroll kołem myszy (pionowy `deltaY` ma zawsze przewijać listę, nie zdjęcia).
 - Oba gesty są **rozłączne, nie diagonalne** — nie da się jednym ruchem jednocześnie przewinąć listę i przesunąć zdjęcia. Aplikacja rozpoznaje dominującą oś ruchu na starcie gestu i przypisuje go do jednej z dwóch osi.

@@ -21,7 +21,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="pl" className={`${elmsSans.variable} h-full antialiased`}>
+    <html lang="pl" className={`${elmsSans.variable} no-scrollbar h-full antialiased`}>
       <body className="flex min-h-full flex-col pt-8 font-sans" suppressHydrationWarning>
         <Navbar />
         {children}
