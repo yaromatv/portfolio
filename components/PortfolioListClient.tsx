@@ -3,7 +3,7 @@
 import { useEffect } from 'react';
 import { Project } from '@/types/project';
 import { ProjectImage } from '@/lib/utils';
-import { enableSmoothWheelScroll } from '@/lib/smoothWheel';
+import { cancelWheelMomentum, enableSmoothWheelScroll } from '@/lib/smoothWheel';
 import ProjectView from './ProjectView';
 
 interface PortfolioListClientProps {
@@ -24,6 +24,16 @@ export default function PortfolioListClient({
   // Jego pierwsze zdjęcie jest realnym LCP strony, więc dostaje preload.
   const entryProjectId = focusProjectId ?? projects[0]?.id;
 
+  const handleBackToTop = () => {
+    // Natywne pushState z tego samego powodu co przy kliknięciu w projekt (patrz ProjectView).
+    if (window.location.pathname !== '/portfolio') {
+      window.history.pushState(null, '', '/portfolio');
+    }
+    // Dobieg kółka ustawia scrollTop co klatkę i przerwałby płynny powrót na górę.
+    cancelWheelMomentum();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   return (
     <div className="flex flex-col gap-3">
       {projects.map((project, index) => (
@@ -36,6 +46,13 @@ export default function PortfolioListClient({
           isFirstInList={index === 0}
         />
       ))}
+      <button
+        type="button"
+        onClick={handleBackToTop}
+        className="self-center py-6 text-sm landscape:pb-10 tracking-wide transition-colors hover:text-gray-400"
+      >
+        BACK TO TOP
+      </button>
     </div>
   );
 }
