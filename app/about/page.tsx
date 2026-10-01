@@ -10,6 +10,8 @@ export const metadata: Metadata = {
 interface TextSegment {
   type: 'text' | 'bold' | 'gray' | 'italic';
   content: string;
+  // Opcjonalny adres — segment staje się wtedy klikalnym linkiem.
+  href?: string;
 }
 
 interface TextSection {
@@ -28,6 +30,16 @@ const TEXT_PADDING = 'p-16';
 // wyszedłby ponad górną krawędź panelu.
 const NAVBAR_OFFSET = 'landscape:-mt-8 landscape:mb-8 portrait:mb-16';
 
+// NAGŁÓWEK SEKCJI — rozmiar i styl. Rozmiar: text-base / text-lg / text-xl / text-2xl,
+// grubość: font-medium / font-semibold / font-bold, dodatkowo np. `uppercase`, `tracking-wide`.
+const HEADING_STYLE = 'text-xl font-bold';
+
+// ODSTĘP MIĘDZY NAGŁÓWKIEM A PIERWSZĄ LINIJKĄ TEKSTU pod nim.
+const HEADING_GAP = 'mt-4';
+
+// LINKI (email, LinkedIn) — ta sama reakcja na hover co w navbarze.
+const LINK_STYLE = 'transition-colors hover:text-gray-400';
+
 // SZEROKOŚĆ PANELU Z TEKSTEM na ekranie poziomym. Obie wartości muszą być takie same:
 // pierwsza ustawia szerokość panelu, druga odsuwa zdjęcie o tyle samo od lewej,
 // żeby zdjęcie zajmowało dokładnie resztę ekranu i nie chowało się pod tekstem.
@@ -42,105 +54,185 @@ const PHOTO_SHIFT_PORTRAIT = 'portrait:object-[right_-43vw_top_50%]';
 // Mockup typografii — treść tymczasowa, docelowy tekst "O mnie" wejdzie później.
 const sections: TextSection[] = [
   {
-    heading: 'O mnie',
+    heading: ' ',
     lines: [
       [
-        { type: 'text', content: 'Architekt i fullstack developer ' },
-        { type: 'bold', content: 'z Rotterdamu.' },
+        { type: 'text', content: 'I’m Yaroslav Matvieiev, an ' },
+        { type: 'bold', content: 'architect, interior designer and 3D visualization specialist' },
+        { type: 'text', content: ' based in Kraków, Poland.' },
       ],
       [
-        { type: 'text', content: 'Ponad ' },
-        { type: 'bold', content: '10 lat doświadczenia' },
-        { type: 'text', content: ' w ' },
-        { type: 'italic', content: 'projektowaniu wnętrz' },
-        { type: 'text', content: ' i archwizualizacji.' },
+        { type: 'text', content: 'I studied architecture in ' },
+        { type: 'text', content: 'Kraków, Amsterdam and the Basque Country' },
+        {
+          type: 'text',
+          content: ', and have worked on projects in Poland, Italy and the Netherlands.',
+        },
       ],
       [
-        { type: 'gray', content: 'Współpraca z klientami w ' },
-        { type: 'text', content: 'Polsce i Holandii.' },
+        { type: 'text', content: 'For four years I ' },
+        { type: 'text', content: 'led visualization at MWM Architekci' },
+        {
+          type: 'text',
+          content: ', where I twice rebuilt the studio’s rendering workflow from the ground up.',
+        },
       ],
       [
         {
-          type: 'italic',
-          content: '„Design is not just what it looks like — design is how it works.”',
+          type: 'text',
+          content:
+            'My background in computer science drives a constant search for better tools and faster, higher-quality workflows.',
         },
       ],
     ],
   },
   {
-    heading: 'Umiejętności',
+    heading: 'WHAT I DO',
     lines: [
       [
-        { type: 'bold', content: 'AutoCAD, SketchUp, V-Ray, ' },
-        { type: 'text', content: 'Adobe Creative Suite.' },
+        { type: 'bold', content: 'Architectural visualization' },
+        {
+          type: 'text',
+          content:
+            ' / images for competitions, investors and marketing, using classic and AI-assisted workflows',
+        },
       ],
       [
-        { type: 'text', content: 'React, Node.js, ' },
-        { type: 'gray', content: 'MongoDB, Express,' },
-        { type: 'text', content: ' Redux Toolkit.' },
+        { type: 'bold', content: 'Architecture' },
+        {
+          type: 'text',
+          content:
+            ' / concept design, competition entries, capacity studies and construction documentation',
+        },
       ],
       [
-        { type: 'text', content: 'Zarządzanie projektem ' },
-        { type: 'italic', content: 'od koncepcji do realizacji.' },
+        { type: 'bold', content: 'Interior design' },
+        {
+          type: 'text',
+          content:
+            ' / full-scope projects, from concept to completion, for residential common areas, commercial and cultural spaces as well as private clients',
+        },
       ],
-      [{ type: 'gray', content: 'Zawsze uczę się czegoś nowego.' }],
+      [
+        { type: 'bold', content: '3D modeling' },
+        { type: 'text', content: ' / including modeling existing buildings from point cloud data' },
+      ],
     ],
   },
   {
-    heading: 'Contact',
+    heading: 'EXPERIENCE',
     lines: [
       [
-        { type: 'bold', content: 'AutoCAD, SketchUp, V-Ray, ' },
-        { type: 'text', content: 'Adobe Creative Suite.' },
+        { type: 'bold', content: '2019 – present / Architect & Interior Designer' },
+        { type: 'text', content: ' / Independent practice' },
+      ],
+      [{ type: 'gray', content: 'Architecture and interiors for private clients' }],
+      [
+        { type: 'bold', content: '2022 – 2026 / Architect, 3D Generalist & Lead Visualizer' },
+        { type: 'text', content: ' / MWM Architekci, Rzeszów' },
       ],
       [
-        { type: 'text', content: 'React, Node.js, ' },
-        { type: 'gray', content: 'MongoDB, Express,' },
-        { type: 'text', content: ' Redux Toolkit.' },
+        {
+          type: 'gray',
+          content:
+            'Led visualization across residential, commercial, public and cultural projects; interior design, concepts and competitions',
+        },
       ],
       [
-        { type: 'text', content: 'Zarządzanie projektem ' },
-        { type: 'italic', content: 'od koncepcji do realizacji.' },
+        { type: 'bold', content: '2022 / Architect, Project & Construction Manager' },
+        { type: 'text', content: ' / Apartment, Rotterdam' },
       ],
-      [{ type: 'gray', content: 'Zawsze uczę się czegoś nowego.' }],
+      [
+        { type: 'bold', content: '2021 / Junior Architect' },
+        { type: 'text', content: ' / OP Architekten, Kraków' },
+      ],
+      [
+        { type: 'bold', content: '2020 / 3D Visualization Artist, Junior Architect' },
+        { type: 'text', content: ' / ATELIER9, Ciabaudo, Italy' },
+      ],
     ],
   },
   {
-    heading: 'Pronto',
+    heading: 'RECOGNITION',
     lines: [
       [
-        { type: 'bold', content: 'AutoCAD, SketchUp, V-Ray, ' },
-        { type: 'text', content: 'Adobe Creative Suite.' },
+        { type: 'bold', content: '2026 / Honorable mention' },
+        { type: 'text', content: ', SARP Competition #1093, ' },
+        { type: 'italic', content: 'Jamno Multimodal Transfer Hub' },
+        { type: 'text', content: ', Koszalin' },
       ],
       [
-        { type: 'text', content: 'React, Node.js, ' },
-        { type: 'gray', content: 'MongoDB, Express,' },
-        { type: 'text', content: ' Redux Toolkit.' },
+        { type: 'bold', content: '2026 / Honorable mention' },
+        { type: 'text', content: ', SARP Competition #398, ' },
+        { type: 'italic', content: 'Energia Inowrocławia' },
+        { type: 'text', content: ' Culture & Education Center, Inowrocław' },
       ],
-      [
-        { type: 'text', content: 'Zarządzanie projektem ' },
-        { type: 'italic', content: 'od koncepcji do realizacji.' },
-      ],
-      [{ type: 'gray', content: 'Zawsze uczę się czegoś nowego.' }],
+      [{ type: 'gray', content: 'Both entries were developed with the MWM Architekci team' }],
     ],
   },
   {
-    heading: 'Giga',
+    heading: 'EDUCATION',
     lines: [
       [
-        { type: 'bold', content: 'AutoCAD, SketchUp, V-Ray, ' },
-        { type: 'text', content: 'Adobe Creative Suite.' },
+        { type: 'bold', content: '2016 – 2021 / MSc Eng. Architecture' },
+        {
+          type: 'text',
+          content:
+            ' / Cracow University of Technology, with Erasmus exchanges at Amsterdam University of Applied Sciences and the University of the Basque Country',
+        },
       ],
       [
-        { type: 'text', content: 'React, Node.js, ' },
-        { type: 'gray', content: 'MongoDB, Express,' },
-        { type: 'text', content: ' Redux Toolkit.' },
+        { type: 'bold', content: '2012 – 2016 / Computer Science' },
+        {
+          type: 'text',
+          content:
+            ' / Cracow University of Technology; Taras Shevchenko National University of Kyiv',
+        },
+      ],
+    ],
+  },
+  {
+    heading: 'TOOLS',
+    lines: [
+      [
+        { type: 'bold', content: 'BIM & CAD: ' },
+        { type: 'text', content: 'Revit, ArchiCAD, AutoCAD, Bentley MicroStation' },
       ],
       [
-        { type: 'text', content: 'Zarządzanie projektem ' },
-        { type: 'italic', content: 'od koncepcji do realizacji.' },
+        { type: 'bold', content: '3D modeling: ' },
+        { type: 'text', content: 'SketchUp + LayOut, Rhino + Grasshopper, 3ds Max' },
       ],
-      [{ type: 'gray', content: 'Zawsze uczę się czegoś nowego.' }],
+      [
+        { type: 'bold', content: 'Rendering: ' },
+        { type: 'text', content: 'Corona, V-Ray, D5 Render, Twinmotion' },
+      ],
+      [
+        { type: 'bold', content: 'AI visualization: ' },
+        { type: 'text', content: 'ComfyUI' },
+      ],
+      [
+        { type: 'bold', content: 'Post-production: ' },
+        { type: 'text', content: 'Adobe Photoshop, Lightroom, Premiere Pro' },
+      ],
+    ],
+  },
+  {
+    heading: 'CONTACT',
+    lines: [
+      [{ type: 'text', content: 'Open to new opportunities and collaborations' }],
+      [
+        { type: 'bold', content: 'Email: ' },
+        { type: 'text', content: 'yaromatv@gmail.com', href: 'mailto:yaromatv@gmail.com' },
+      ],
+      [
+        { type: 'bold', content: 'LinkedIn: ' },
+        {
+          type: 'text',
+          content: 'linkedin.com/in/yaroslavmatvieiev',
+          href: 'https://www.linkedin.com/in/yaroslavmatvieiev',
+        },
+      ],
+      [{ type: 'gray', content: 'CV available on request' }],
     ],
   },
 ];
@@ -190,17 +282,31 @@ export default function AboutPage() {
             {sections.map((section, sectionIndex) => (
               <div key={section.heading}>
                 {/* odstęp MIĘDZY SEKCJAMI — zmieniaj `mt-10` */}
-                <h2 className={`text-lg font-semibold ${sectionIndex === 0 ? '' : 'mt-10'}`}>
+                <h2 className={`${HEADING_STYLE} ${sectionIndex === 0 ? '' : 'mt-10'}`}>
                   {section.heading}
                 </h2>
                 {section.lines.map((line, index) => (
-                  // odstęp MIĘDZY LINIJKAMI tekstu — zmieniaj `mt-4`
-                  <p key={index} className="mt-4">
-                    {line.map((segment, segmentIndex) => (
-                      <span key={segmentIndex} className={segmentClassName(segment.type)}>
-                        {segment.content}
-                      </span>
-                    ))}
+                  // odstęp MIĘDZY LINIJKAMI tekstu — zmieniaj `mt-2.5`;
+                  // pierwsza linijka pod nagłówkiem ma osobny odstęp HEADING_GAP
+                  <p key={index} className={index === 0 ? HEADING_GAP : 'mt-2.5'}>
+                    {line.map((segment, segmentIndex) =>
+                      segment.href ? (
+                        <a
+                          key={segmentIndex}
+                          href={segment.href}
+                          {...(segment.href.startsWith('http')
+                            ? { target: '_blank', rel: 'noopener noreferrer' }
+                            : {})}
+                          className={`${segmentClassName(segment.type)} ${LINK_STYLE}`}
+                        >
+                          {segment.content}
+                        </a>
+                      ) : (
+                        <span key={segmentIndex} className={segmentClassName(segment.type)}>
+                          {segment.content}
+                        </span>
+                      )
+                    )}
                   </p>
                 ))}
               </div>
