@@ -26,6 +26,10 @@ const LINE_PX = 32;
 const PAGE_RATIO = 0.9;
 
 let target: number | null = null;
+// Własna, ułamkowa pozycja dobiegu. Nie odczytujemy jej co klatkę z przeglądarki, bo ta
+// zaokrągla scroll do pełnych pikseli: pod koniec dobiegu krok spada poniżej 0,5 px, znika
+// w zaokrągleniu i strona stawała kilkanaście pikseli przed celem (np. przed samą górą listy).
+let position = 0;
 let frame = 0;
 let lastFrameAt = 0;
 let lastWheelAt = 0;
@@ -102,8 +106,7 @@ function tick(): void {
 
   // Cel przycinamy co klatkę, bo wysokość dokumentu rośnie w miarę doładowywania zdjęć.
   target = Math.max(0, Math.min(maxScroll(), target));
-  const current = scrollPosition();
-  const distance = target - current;
+  const distance = target - position;
 
   if (Math.abs(distance) < EPSILON_PX) {
     scrollToPosition(target);
@@ -111,7 +114,8 @@ function tick(): void {
     return;
   }
 
-  scrollToPosition(current + distance * (1 - Math.exp(-dt / TIME_CONSTANT_MS)));
+  position += distance * (1 - Math.exp(-dt / TIME_CONSTANT_MS));
+  scrollToPosition(position);
   frame = requestAnimationFrame(tick);
 }
 
@@ -144,8 +148,9 @@ export function enableSmoothWheelScroll(element?: HTMLElement): () => void {
     if (delta === 0) return;
 
     e.preventDefault();
-    const base = target ?? scrollPosition();
-    target = Math.max(0, Math.min(maxScroll(), base + delta * DISTANCE_SCALE));
+    // Nowy dobieg startuje z faktycznej pozycji strony; trwający liczy dalej z własnej.
+    if (target === null) position = scrollPosition();
+    target = Math.max(0, Math.min(maxScroll(), (target ?? position) + delta * DISTANCE_SCALE));
     if (!frame) {
       lastFrameAt = performance.now();
       frame = requestAnimationFrame(tick);

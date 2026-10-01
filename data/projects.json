@@ -21,7 +21,7 @@
     "location": "Inowrocław, Poland",
     "year": 2026,
     "month": 3,
-    "role": ["Interior Design", "Archviz"],
+    "role": ["Interior Designer", "Archviz"],
     "tools": ["Rhino", "AI", "Microstation", "PS"],
     "rating": 10,
     "awards": [
@@ -136,7 +136,7 @@
     "location": "Rzeszów, Poland",
     "year": 2025,
     "month": 10,
-    "role": ["Interior Design"],
+    "role": ["Interior Designer"],
     "tools": ["SU", "LO"],
     "rating": 4,
     "awards": []
@@ -147,7 +147,7 @@
     "location": "Kielce, Poland",
     "year": 2023,
     "month": 7,
-    "role": ["Interior Design", "Archviz"],
+    "role": ["Interior Designer", "Archviz"],
     "tools": ["SU", "LO", "D5"],
     "rating": 7,
     "awards": []
