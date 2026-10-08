@@ -94,7 +94,7 @@
     "month": 7,
     "role": ["Archviz"],
     "tools": ["Rhino", "AI"],
-    "rating": 4,
+    "rating": 3,
     "awards": []
   },
   {
@@ -131,6 +131,17 @@
     "awards": []
   },
   {
+    "id": "bank",
+    "title": "Bank",
+    "location": "Kielce, Poland",
+    "year": 2023,
+    "month": 12,
+    "role": ["Interior Designer", "Archviz"],
+    "tools": ["SU", "LO", "D5"],
+    "rating": 4.9,
+    "awards": []
+  },
+  {
     "id": "potokowa",
     "title": "Residental",
     "location": "Rzeszów, Poland",
@@ -153,11 +164,22 @@
     "awards": []
   },
   {
-    "id": "play-room",
+    "id": "game-zone",
     "title": "Play room",
     "location": "Kielce, Poland",
     "year": 2023,
     "month": 12,
+    "role": ["Interior Designer", "Archviz"],
+    "tools": ["SU", "LO", "D5"],
+    "rating": 5,
+    "awards": []
+  },
+  {
+    "id": "lounge",
+    "title": "Lounge",
+    "location": "Kielce, Poland",
+    "year": 2023,
+    "month": 10,
     "role": ["Interior Designer", "Archviz"],
     "tools": ["SU", "LO", "D5"],
     "rating": 5,
