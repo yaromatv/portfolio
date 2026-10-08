@@ -151,5 +151,16 @@
     "tools": ["SU", "LO", "D5"],
     "rating": 7,
     "awards": []
+  },
+  {
+    "id": "play-room",
+    "title": "Play room",
+    "location": "Kielce, Poland",
+    "year": 2023,
+    "month": 12,
+    "role": ["Interior Designer", "Archviz"],
+    "tools": ["SU", "LO", "D5"],
+    "rating": 6,
+    "awards": []
   }
 ]
