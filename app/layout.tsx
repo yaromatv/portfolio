@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { Elms_Sans } from 'next/font/google';
+import { Analytics } from '@vercel/analytics/next';
 import CustomCursor from '@/components/CustomCursor';
 import DisableContextMenu from '@/components/DisableContextMenu';
 import Navbar from '@/components/Navbar';
@@ -27,6 +28,7 @@ export default function RootLayout({
         {children}
         <DisableContextMenu />
         <CustomCursor />
+        <Analytics />
       </body>
     </html>
   );
